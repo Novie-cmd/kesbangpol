@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dashboard from './components/Dashboard';
 import ApplicationForm from './components/ApplicationForm';
 import ApplicationList from './components/ApplicationList';
@@ -14,9 +14,21 @@ const App: React.FC = () => {
   const [permits, setPermits] = useState<ResearchPermit[]>(MOCK_PERMITS);
   const [selectedPermitForPrint, setSelectedPermitForPrint] = useState<ResearchPermit | null>(null);
 
+  // Deep-linking from QR Code scan
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const page = params.get('page');
+    if (page === 'apply') setActiveTab('apply');
+    if (page === 'tracking') setActiveTab('tracking');
+    
+    // Clear URL params after reading to keep it clean
+    if (page) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   const handlePrint = (permit: ResearchPermit) => {
     setSelectedPermitForPrint(permit);
-    // Give react time to render the print area before triggering browser print
     setTimeout(() => {
       window.print();
     }, 150);

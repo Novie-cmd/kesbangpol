@@ -2,20 +2,13 @@
 import React, { useMemo } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  Cell, LineChart, Line, Legend 
+  Cell, LineChart, Line 
 } from 'recharts';
 import { NTB_REGENCIES, RESEARCH_CATEGORIES } from '../constants';
 import { PermitStatus, ResearchPermit } from '../types';
 
 const COLORS = [
-  '#6366f1', // Indigo (Sosial)
-  '#10b981', // Emerald (Pendidikan)
-  '#f59e0b', // Amber (Ekonomi)
-  '#8b5cf6', // Violet (Agama)
-  '#22c55e', // Green (Lingkungan)
-  '#ef4444', // Rose (Politik)
-  '#06b6d4', // Cyan (Teknologi)
-  '#ec4899'  // Pink (Kesehatan)
+  '#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#22c55e', '#ef4444', '#06b6d4', '#ec4899'
 ];
 
 const StatCard: React.FC<{ title: string; value: number | string; icon: React.ReactNode; color: string }> = ({ title, value, icon, color }) => (
@@ -32,6 +25,39 @@ const StatCard: React.FC<{ title: string; value: number | string; icon: React.Re
     </div>
   </div>
 );
+
+const QRCodeCard: React.FC<{ title: string; subtitle: string; page: string; color: string }> = ({ title, subtitle, page, color }) => {
+  const currentBaseUrl = window.location.origin + window.location.pathname;
+  const qrUrl = `${currentBaseUrl}?page=${page}`;
+  const qrImageSource = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUrl)}`;
+
+  return (
+    <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center text-center group hover:border-indigo-200 transition-all">
+      <h5 className="text-lg font-black text-slate-800 tracking-tight mb-1">{title}</h5>
+      <p className="text-slate-500 text-xs mb-6">{subtitle}</p>
+      
+      <div className={`p-4 rounded-[2rem] bg-slate-50 mb-6 group-hover:bg-white group-hover:shadow-xl transition-all border-4 ${color}`}>
+        <img 
+          src={qrImageSource} 
+          alt={`QR Code for ${title}`} 
+          className="w-40 h-40 mix-blend-multiply"
+        />
+      </div>
+
+      <div className="flex flex-col gap-2 w-full">
+        <a 
+          href={qrUrl} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-[10px] font-black text-indigo-600 bg-indigo-50 py-2 rounded-xl border border-indigo-100 uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all"
+        >
+          Buka Link Langsung
+        </a>
+        <p className="text-[9px] text-slate-400 font-bold italic">Tampilkan QR ini di loket pelayanan</p>
+      </div>
+    </div>
+  );
+};
 
 const Dashboard: React.FC<{ permits: ResearchPermit[] }> = ({ permits }) => {
   const yearlyStats = useMemo(() => {
@@ -100,15 +126,28 @@ const Dashboard: React.FC<{ permits: ResearchPermit[] }> = ({ permits }) => {
         />
       </div>
 
+      {/* QR Codes Access Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <QRCodeCard 
+          title="QR Pengajuan Mandiri" 
+          subtitle="Scan untuk mengisi formulir permohonan izin penelitian"
+          page="apply"
+          color="border-indigo-100"
+        />
+        <QRCodeCard 
+          title="QR Lacak Status" 
+          subtitle="Scan untuk mengecek progres atau mencetak surat izin"
+          page="tracking"
+          color="border-emerald-100"
+        />
+      </div>
+
       {/* Category Analysis Panel */}
       <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
         <div className="p-8 border-b border-slate-100 flex items-center justify-between">
           <div>
             <h4 className="text-2xl font-black text-slate-800 tracking-tight">Analisis Bidang Penelitian</h4>
             <p className="text-slate-500 text-sm">Distribusi izin penelitian berdasarkan kategori keilmuan</p>
-          </div>
-          <div className="hidden sm:flex gap-2">
-            <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest">Periode 2023 - 2026</span>
           </div>
         </div>
         
