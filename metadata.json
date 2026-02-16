@@ -1,0 +1,7 @@
+{
+  "name": "SIPEKA Kesbangpol NTB",
+  "description": "Sistem Informasi Perizinan Penelitian Kesbangpol Provinsi NTB. Aplikasi untuk pengajuan izin penelitian dan dashboard monitoring data perizinan periode 2023-2026.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
