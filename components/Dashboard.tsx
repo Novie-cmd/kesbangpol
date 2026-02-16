@@ -28,8 +28,9 @@ const StatCard: React.FC<{ title: string; value: number | string; icon: React.Re
 
 const QRCodeCard: React.FC<{ title: string; subtitle: string; page: string; color: string }> = ({ title, subtitle, page, color }) => {
   const currentBaseUrl = window.location.origin + window.location.pathname;
-  const qrUrl = `${currentBaseUrl}?page=${page}`;
-  const qrImageSource = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUrl)}`;
+  // Menambahkan parameter mode=public agar sidebar tersembunyi saat di-scan
+  const qrUrl = `${currentBaseUrl}?page=${page}&mode=public`;
+  const qrImageSource = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}`;
 
   return (
     <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col items-center text-center group hover:border-indigo-200 transition-all">
@@ -40,7 +41,7 @@ const QRCodeCard: React.FC<{ title: string; subtitle: string; page: string; colo
         <img 
           src={qrImageSource} 
           alt={`QR Code for ${title}`} 
-          className="w-40 h-40 mix-blend-multiply"
+          className="w-48 h-48 mix-blend-multiply"
         />
       </div>
 
@@ -49,9 +50,9 @@ const QRCodeCard: React.FC<{ title: string; subtitle: string; page: string; colo
           href={qrUrl} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-[10px] font-black text-indigo-600 bg-indigo-50 py-2 rounded-xl border border-indigo-100 uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all"
+          className="text-[10px] font-black text-indigo-600 bg-indigo-50 py-2.5 rounded-xl border border-indigo-100 uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all"
         >
-          Buka Link Langsung
+          Tes Link Publik
         </a>
         <p className="text-[9px] text-slate-400 font-bold italic">Tampilkan QR ini di loket pelayanan</p>
       </div>

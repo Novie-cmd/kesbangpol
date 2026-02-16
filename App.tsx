@@ -13,17 +13,25 @@ const App: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [permits, setPermits] = useState<ResearchPermit[]>(MOCK_PERMITS);
   const [selectedPermitForPrint, setSelectedPermitForPrint] = useState<ResearchPermit | null>(null);
+  const [isPublicMode, setIsPublicMode] = useState(false);
 
   // Deep-linking from QR Code scan
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const page = params.get('page');
+    const mode = params.get('mode');
+
+    if (mode === 'public') {
+      setIsPublicMode(true);
+    }
+
     if (page === 'apply') setActiveTab('apply');
     if (page === 'tracking') setActiveTab('tracking');
     
-    // Clear URL params after reading to keep it clean
+    // Clear URL params after reading to keep it clean, 
+    // but keep mode if we want to maintain the "locked" state
     if (page) {
-      window.history.replaceState({}, document.title, window.location.pathname);
+      window.history.replaceState({}, document.title, window.location.pathname + (mode ? `?mode=${mode}` : ''));
     }
   }, []);
 
@@ -137,72 +145,92 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {sidebarOpen && (
+      {sidebarOpen && !isPublicMode && (
         <div 
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      <aside className={`fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-200 z-50 transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:static print:hidden`}>
-        <div className="flex flex-col h-full p-6">
-          <div className="flex items-center gap-3 px-2 mb-10">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-xl">S</div>
-            <div>
-              <h1 className="text-lg font-bold text-slate-800 leading-none">SIPEKA</h1>
-              <span className="text-[10px] font-bold text-indigo-500 tracking-widest uppercase">Kesbangpol NTB</span>
+      {!isPublicMode && (
+        <aside className={`fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-200 z-50 transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:static print:hidden`}>
+          <div className="flex flex-col h-full p-6">
+            <div className="flex items-center gap-3 px-2 mb-10">
+              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black text-xl">S</div>
+              <div>
+                <h1 className="text-lg font-bold text-slate-800 leading-none">SIPEKA</h1>
+                <span className="text-[10px] font-bold text-indigo-500 tracking-widest uppercase">Kesbangpol NTB</span>
+              </div>
             </div>
+
+            <nav className="flex-1 space-y-2">
+              <NavItem 
+                tab="dashboard" 
+                label="Dashboard Utama" 
+                icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"></path></svg>} 
+              />
+              <NavItem 
+                tab="tracking" 
+                label="Cek Status / Cetak" 
+                icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>} 
+              />
+              <div className="pt-6 pb-2 px-6">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Internal Admin</p>
+              </div>
+              <NavItem 
+                tab="verification" 
+                label="Verifikasi Masuk" 
+                icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>} 
+              />
+              <NavItem 
+                tab="archive" 
+                label="Database Terbit" 
+                icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>} 
+              />
+              <NavItem 
+                tab="apply" 
+                label="Input Mandiri" 
+                icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>} 
+              />
+            </nav>
           </div>
+        </aside>
+      )}
 
-          <nav className="flex-1 space-y-2">
-            <NavItem 
-              tab="dashboard" 
-              label="Dashboard Utama" 
-              icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"></path></svg>} 
-            />
-            <NavItem 
-              tab="tracking" 
-              label="Cek Status / Cetak" 
-              icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>} 
-            />
-            <div className="pt-6 pb-2 px-6">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Internal Admin</p>
-            </div>
-            <NavItem 
-              tab="verification" 
-              label="Verifikasi Masuk" 
-              icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>} 
-            />
-            <NavItem 
-              tab="archive" 
-              label="Database Terbit" 
-              icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>} 
-            />
-            <NavItem 
-              tab="apply" 
-              label="Input Mandiri" 
-              icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>} 
-            />
-          </nav>
-        </div>
-      </aside>
-
-      <main className="flex-1 overflow-y-auto print:p-0">
+      <main className={`flex-1 overflow-y-auto print:p-0 ${isPublicMode ? 'w-full' : ''}`}>
         <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 py-4 flex items-center justify-between z-30 print:hidden">
           <div className="flex items-center gap-4">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            </button>
-            <h2 className="text-xl font-black text-slate-800 uppercase tracking-tighter">
+            {!isPublicMode && (
+              <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+              </button>
+            )}
+            {isPublicMode && (
+              <div className="flex items-center gap-3">
+                 <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black text-sm">S</div>
+                 <h1 className="text-sm font-black text-slate-800 uppercase tracking-tight">Portal Layanan Kesbangpol NTB</h1>
+              </div>
+            )}
+            <h2 className={`text-xl font-black text-slate-800 uppercase tracking-tighter ${isPublicMode ? 'hidden sm:block' : ''}`}>
               {activeTab === 'dashboard' ? 'Overview' : 
                activeTab === 'tracking' ? 'Lacak Izin' :
                activeTab === 'apply' ? 'Permohonan' : 
                activeTab === 'verification' ? 'Verifikasi' : 'Arsip Digital'}
             </h2>
           </div>
+          {isPublicMode && (
+            <button 
+              onClick={() => {
+                window.location.href = window.location.origin + window.location.pathname;
+              }}
+              className="text-[10px] font-black bg-slate-100 text-slate-600 px-4 py-2 rounded-xl hover:bg-slate-200 transition-all uppercase tracking-widest"
+            >
+              Kembali ke Beranda
+            </button>
+          )}
         </header>
 
-        <div className="p-8 max-w-7xl mx-auto print:p-0">
+        <div className={`p-8 max-w-7xl mx-auto print:p-0 ${isPublicMode ? 'py-12' : ''}`}>
           {activeTab === 'dashboard' && <Dashboard permits={permits} />}
           {activeTab === 'apply' && <ApplicationForm />}
           {activeTab === 'verification' && <ApplicationList permits={permits} setPermits={setPermits} />}
