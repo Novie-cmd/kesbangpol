@@ -45,6 +45,11 @@ const App: React.FC = () => {
     }, 150);
   };
 
+  const handleLogout = () => {
+    // Mengarahkan kembali ke root URL untuk keluar dari mode publik/sesi
+    window.location.href = window.location.origin + window.location.pathname;
+  };
+
   const NavItem: React.FC<{ tab: typeof activeTab; icon: React.ReactNode; label: string }> = ({ tab, icon, label }) => (
     <button
       onClick={() => {
@@ -231,7 +236,16 @@ const App: React.FC = () => {
             </h2>
           </div>
           
-          {/* Tombol telah dihapus untuk memastikan mode publik terkunci */}
+          {/* Tombol Logout untuk Mode Publik */}
+          {isPublicMode && (
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+              Keluar Aplikasi
+            </button>
+          )}
         </header>
 
         <div className={`p-8 max-w-7xl mx-auto print:p-0 ${isPublicMode ? 'py-12' : ''}`}>
