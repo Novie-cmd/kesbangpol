@@ -223,7 +223,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-            <h2 className={`text-xl font-black text-slate-800 uppercase tracking-tighter ${isPublicMode ? 'hidden sm:block ml-4 border-l border-slate-200 pl-4' : ''}`}>
+            <h2 className={`text-xl font-black text-slate-800 uppercase tracking-tighter ${isPublicMode ? 'ml-4 border-l border-slate-200 pl-4' : ''}`}>
               {activeTab === 'dashboard' ? 'Overview' : 
                activeTab === 'tracking' ? 'Lacak Izin' :
                activeTab === 'apply' ? 'Permohonan' : 
@@ -231,7 +231,7 @@ const App: React.FC = () => {
             </h2>
           </div>
           
-          {/* Tombol Kembali ke Beranda telah dihapus sesuai permintaan */}
+          {/* Tombol telah dihapus untuk memastikan mode publik terkunci */}
         </header>
 
         <div className={`p-8 max-w-7xl mx-auto print:p-0 ${isPublicMode ? 'py-12' : ''}`}>
