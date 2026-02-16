@@ -208,7 +208,7 @@ const App: React.FC = () => {
       )}
 
       <main className={`flex-1 overflow-y-auto print:p-0 ${isPublicMode ? 'w-full' : ''}`}>
-        <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 py-4 flex items-center justify-between z-30 print:hidden">
+        <header className="sticky top-0 bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between z-30 print:hidden">
           <div className="flex items-center gap-4">
             {/* Tombol menu hanya tampil untuk Admin */}
             {!isPublicMode && (
@@ -222,8 +222,8 @@ const App: React.FC = () => {
               <div className="flex items-center gap-3">
                  <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black text-sm">S</div>
                  <div className="flex flex-col">
-                   <h1 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-none">Portal Layanan Perizinan</h1>
-                   <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Kesbangpol NTB</span>
+                   <h1 className="text-[10px] font-black text-slate-800 uppercase tracking-tight leading-none">Portal Layanan Kesbangpol NTB</h1>
+                   <span className="text-[8px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Provinsi Nusa Tenggara Barat</span>
                  </div>
               </div>
             )}
@@ -236,11 +236,11 @@ const App: React.FC = () => {
             </h2>
           </div>
           
-          {/* Tombol Logout untuk Mode Publik */}
+          {/* Tombol Logout untuk Mode Publik (MENGGANTIKAN KEMBALI KE BERANDA) */}
           {isPublicMode && (
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
+              className="flex items-center gap-2 px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all border border-slate-200"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
               Keluar Aplikasi
