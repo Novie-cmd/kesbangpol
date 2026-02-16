@@ -5,12 +5,17 @@ import App from './App';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+  console.error("Fatal Error: Could not find root element with id 'root'");
+} else {
+  try {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  } catch (error) {
+    console.error("Error during React mounting:", error);
+    rootElement.innerHTML = `<div style="padding: 20px; color: red;">Terjadi kesalahan saat memuat aplikasi. Silakan muat ulang halaman.</div>`;
+  }
 }
-
-const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
