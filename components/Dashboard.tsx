@@ -26,9 +26,14 @@ const StatCard: React.FC<{ title: string; value: number | string; icon: React.Re
   </div>
 );
 
-const QRCodeCard: React.FC<{ title: string; subtitle: string; page: string; color: string }> = ({ title, subtitle, page, color }) => {
+const QRCodeCard: React.FC<{ 
+  title: string; 
+  subtitle: string; 
+  page: 'apply' | 'tracking'; 
+  color: string;
+  onActivate: (page: 'apply' | 'tracking') => void;
+}> = ({ title, subtitle, page, color, onActivate }) => {
   const currentBaseUrl = window.location.origin + window.location.pathname;
-  // Menambahkan parameter mode=public agar sidebar tersembunyi saat di-scan
   const qrUrl = `${currentBaseUrl}?page=${page}&mode=public`;
   const qrImageSource = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrUrl)}`;
 
@@ -46,21 +51,25 @@ const QRCodeCard: React.FC<{ title: string; subtitle: string; page: string; colo
       </div>
 
       <div className="flex flex-col gap-2 w-full">
-        <a 
-          href={qrUrl} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-[10px] font-black text-indigo-600 bg-indigo-50 py-2.5 rounded-xl border border-indigo-100 uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all"
+        <button 
+          onClick={() => onActivate(page)}
+          className="text-[10px] font-black text-indigo-600 bg-indigo-50 py-2.5 rounded-xl border border-indigo-100 uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all w-full"
         >
           Tes Link Publik
-        </a>
+        </button>
         <p className="text-[9px] text-slate-400 font-bold italic">Tampilkan QR ini di loket pelayanan</p>
       </div>
     </div>
   );
 };
 
-const Dashboard: React.FC<{ permits: ResearchPermit[] }> = ({ permits }) => {
+interface DashboardProps {
+  permits: ResearchPermit[];
+  onSetPublicMode?: (val: boolean) => void;
+  onSetActiveTab?: (tab: any) => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ permits, onSetPublicMode, onSetActiveTab }) => {
   const yearlyStats = useMemo(() => {
     const years = [2023, 2024, 2025, 2026];
     return years.map(year => ({
@@ -97,34 +106,21 @@ const Dashboard: React.FC<{ permits: ResearchPermit[] }> = ({ permits }) => {
     rejected: permits.filter(p => p.status === PermitStatus.REJECTED).length,
   }), [permits]);
 
+  const handleActivatePublicMode = (page: 'apply' | 'tracking') => {
+    if (onSetPublicMode && onSetActiveTab) {
+      onSetPublicMode(true);
+      onSetActiveTab(page);
+    }
+  };
+
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Summary Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Total Permohonan" 
-          value={totals.total} 
-          color="bg-indigo-500" 
-          icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>} 
-        />
-        <StatCard 
-          title="Izin Terbit" 
-          value={totals.approved} 
-          color="bg-emerald-500" 
-          icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>} 
-        />
-        <StatCard 
-          title="Menunggu" 
-          value={totals.pending} 
-          color="bg-amber-500" 
-          icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>} 
-        />
-        <StatCard 
-          title="Ditolak" 
-          value={totals.rejected} 
-          color="bg-rose-500" 
-          icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>} 
-        />
+        <StatCard title="Total Permohonan" value={totals.total} color="bg-indigo-500" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>} />
+        <StatCard title="Izin Terbit" value={totals.approved} color="bg-emerald-500" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>} />
+        <StatCard title="Menunggu" value={totals.pending} color="bg-amber-500" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>} />
+        <StatCard title="Ditolak" value={totals.rejected} color="bg-rose-500" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>} />
       </div>
 
       {/* QR Codes Access Section */}
@@ -134,24 +130,23 @@ const Dashboard: React.FC<{ permits: ResearchPermit[] }> = ({ permits }) => {
           subtitle="Scan untuk mengisi formulir permohonan izin penelitian"
           page="apply"
           color="border-indigo-100"
+          onActivate={handleActivatePublicMode}
         />
         <QRCodeCard 
           title="QR Lacak Status" 
           subtitle="Scan untuk mengecek progres atau mencetak surat izin"
           page="tracking"
           color="border-emerald-100"
+          onActivate={handleActivatePublicMode}
         />
       </div>
 
       {/* Category Analysis Panel */}
       <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-        <div className="p-8 border-b border-slate-100 flex items-center justify-between">
-          <div>
-            <h4 className="text-2xl font-black text-slate-800 tracking-tight">Analisis Bidang Penelitian</h4>
-            <p className="text-slate-500 text-sm">Distribusi izin penelitian berdasarkan kategori keilmuan</p>
-          </div>
+        <div className="p-8 border-b border-slate-100">
+          <h4 className="text-2xl font-black text-slate-800 tracking-tight">Analisis Bidang Penelitian</h4>
+          <p className="text-slate-500 text-sm">Distribusi izin penelitian berdasarkan kategori keilmuan</p>
         </div>
-        
         <div className="grid grid-cols-1 lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
           <div className="lg:col-span-3 p-8">
             <div className="h-[400px]">
@@ -159,33 +154,20 @@ const Dashboard: React.FC<{ permits: ResearchPermit[] }> = ({ permits }) => {
                 <BarChart data={categoryData} layout="vertical" margin={{ left: 40, right: 40 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
                   <XAxis type="number" hide />
-                  <YAxis 
-                    dataKey="name" 
-                    type="category" 
-                    width={140} 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{fill: '#64748b', fontSize: 11, fontWeight: 'bold'}} 
-                  />
-                  <Tooltip 
-                    cursor={{fill: '#f8fafc'}} 
-                    contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} 
-                  />
+                  <YAxis dataKey="name" type="category" width={140} axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 11, fontWeight: 'bold'}} />
+                  <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
                   <Bar dataKey="value" name="Jumlah Izin" radius={[0, 8, 8, 0]} barSize={24}>
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
+                    {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
-
           <div className="lg:col-span-2 bg-slate-50/50 p-8">
             <h5 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6">Tabel Statistik Bidang</h5>
             <div className="space-y-4">
               {categoryData.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
+                <div key={idx} className="flex items-center justify-between p-3 bg-white rounded-2xl border border-slate-100 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
                     <span className="text-xs font-bold text-slate-700">{item.name}</span>
@@ -206,14 +188,8 @@ const Dashboard: React.FC<{ permits: ResearchPermit[] }> = ({ permits }) => {
           <div className="flex items-center justify-between mb-8">
             <h4 className="text-lg font-black text-slate-800 tracking-tight">Pertumbuhan Per Tahun</h4>
             <div className="flex gap-2">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Total</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Terbit</span>
-              </div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 bg-indigo-500 rounded-full"></div><span className="text-[10px] font-bold text-slate-400 uppercase">Total</span></div>
+              <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div><span className="text-[10px] font-bold text-slate-400 uppercase">Terbit</span></div>
             </div>
           </div>
           <div className="h-[300px]">
@@ -222,16 +198,13 @@ const Dashboard: React.FC<{ permits: ResearchPermit[] }> = ({ permits }) => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12, fontWeight: 'bold'}} />
                 <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
-                <Tooltip 
-                  contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
-                />
-                <Line type="monotone" dataKey="total" name="Total Pengajuan" stroke="#6366f1" strokeWidth={4} dot={{r: 6, fill: '#6366f1', strokeWidth: 3, stroke: '#fff'}} activeDot={{r: 8}} />
-                <Line type="monotone" dataKey="approved" name="Izin Terbit" stroke="#10b981" strokeWidth={4} dot={{r: 6, fill: '#10b981', strokeWidth: 3, stroke: '#fff'}} activeDot={{r: 8}} />
+                <Tooltip contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
+                <Line type="monotone" dataKey="total" name="Total Pengajuan" stroke="#6366f1" strokeWidth={4} dot={{r: 6, fill: '#6366f1', strokeWidth: 3, stroke: '#fff'}} />
+                <Line type="monotone" dataKey="approved" name="Izin Terbit" stroke="#10b981" strokeWidth={4} dot={{r: 6, fill: '#10b981', strokeWidth: 3, stroke: '#fff'}} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
-
         <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
           <h4 className="text-lg font-black text-slate-800 tracking-tight mb-8">Sebaran Lokasi Terpadat</h4>
           <div className="h-[300px]">
@@ -242,9 +215,7 @@ const Dashboard: React.FC<{ permits: ResearchPermit[] }> = ({ permits }) => {
                 <YAxis hide />
                 <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}} />
                 <Bar dataKey="value" name="Jumlah" radius={[8, 8, 0, 0]} barSize={40}>
-                  {regencyStats.slice(0, 6).map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={0.8} />
-                  ))}
+                  {regencyStats.slice(0, 6).map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} fillOpacity={0.8} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
