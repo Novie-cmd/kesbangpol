@@ -43,11 +43,11 @@ const App: React.FC = () => {
   };
 
   const handleLogout = () => {
-    // Reset state secara internal tanpa memuat ulang halaman (SPA Way)
+    // Reset state secara internal (SPA Way)
     setIsPublicMode(false);
     setActiveTab('dashboard');
     setSidebarOpen(false);
-    // Bersihkan sisa parameter di URL jika ada
+    // Bersihkan sisa parameter di URL secara internal
     window.history.pushState({}, document.title, window.location.origin + window.location.pathname);
   };
 
@@ -187,8 +187,8 @@ const App: React.FC = () => {
       )}
 
       <main className={`flex-1 overflow-y-auto print:p-0 ${isPublicMode ? 'w-full' : ''}`}>
-        <header className="sticky top-0 bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between z-30 print:hidden">
-          <div className="flex items-center gap-4">
+        <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-8 py-3 flex items-center justify-between z-30 print:hidden">
+          <div className="flex items-center gap-3">
             {!isPublicMode && (
               <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -196,16 +196,16 @@ const App: React.FC = () => {
             )}
             
             {isPublicMode && (
-              <div className="flex items-center gap-3">
-                 <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black text-sm">S</div>
+              <div className="flex items-center gap-2">
+                 <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black text-[10px]">S</div>
                  <div className="flex flex-col">
-                   <h1 className="text-[10px] font-black text-slate-800 uppercase tracking-tight leading-none">Portal Layanan Perizinan</h1>
-                   <span className="text-[8px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Kesbangpol NTB</span>
+                   <h1 className="text-[9px] font-black text-slate-800 uppercase tracking-tight leading-none">Portal Layanan</h1>
+                   <span className="text-[7px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Kesbangpol NTB</span>
                  </div>
               </div>
             )}
 
-            <h2 className={`text-xl font-black text-slate-800 uppercase tracking-tighter ${isPublicMode ? 'ml-4 border-l border-slate-200 pl-4' : ''}`}>
+            <h2 className={`text-sm md:text-xl font-black text-slate-800 uppercase tracking-tighter ${isPublicMode ? 'ml-2 border-l border-slate-200 pl-2' : ''}`}>
               {activeTab === 'dashboard' ? 'Overview' : 
                activeTab === 'tracking' ? 'Lacak Izin' :
                activeTab === 'apply' ? 'Permohonan' : 
@@ -216,19 +216,20 @@ const App: React.FC = () => {
           {isPublicMode ? (
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-2 px-5 py-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 md:px-5 md:py-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg md:rounded-xl font-black text-[8px] md:text-[10px] uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all shadow-sm"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-              Keluar Aplikasi
+              <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+              <span className="hidden xs:inline">Keluar Aplikasi</span>
+              <span className="xs:hidden">Keluar</span>
             </button>
           ) : (
-            <div className="hidden lg:block">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1.5 rounded-full">Admin System Active</span>
+            <div className="hidden md:block">
+              <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1.5 rounded-full">Admin System</span>
             </div>
           )}
         </header>
 
-        <div className={`p-8 max-w-7xl mx-auto print:p-0 ${isPublicMode ? 'py-12' : ''}`}>
+        <div className={`p-4 md:p-8 max-w-7xl mx-auto print:p-0 ${isPublicMode ? 'py-6 md:py-12' : ''}`}>
           {activeTab === 'dashboard' && <Dashboard permits={permits} onSetPublicMode={setIsPublicMode} onSetActiveTab={setActiveTab} />}
           {activeTab === 'apply' && <ApplicationForm />}
           {activeTab === 'verification' && <ApplicationList permits={permits} setPermits={setPermits} />}
