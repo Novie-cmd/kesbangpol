@@ -21,17 +21,20 @@ const App: React.FC = () => {
     const page = params.get('page');
     const mode = params.get('mode');
 
+    // Aktifkan mode publik jika terdeteksi parameter mode=public
     if (mode === 'public') {
       setIsPublicMode(true);
     }
 
+    // Set tab aktif berdasarkan parameter page
     if (page === 'apply') setActiveTab('apply');
     if (page === 'tracking') setActiveTab('tracking');
     
-    // Clear URL params after reading to keep it clean, 
-    // but keep mode if we want to maintain the "locked" state
-    if (page) {
-      window.history.replaceState({}, document.title, window.location.pathname + (mode ? `?mode=${mode}` : ''));
+    // Logika pembersihan URL:
+    // 1. Jika bukan mode publik, bersihkan parameter setelah dibaca (UX Admin)
+    // 2. Jika mode publik, biarkan parameter agar refresh tidak mereset halaman
+    if (page && mode !== 'public') {
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
@@ -145,6 +148,7 @@ const App: React.FC = () => {
         </div>
       )}
 
+      {/* Backdrop Sidebar Mobile - Hanya Admin */}
       {sidebarOpen && !isPublicMode && (
         <div 
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -152,6 +156,7 @@ const App: React.FC = () => {
         />
       )}
 
+      {/* Sidebar - Disembunyikan sepenuhnya di Mode Publik */}
       {!isPublicMode && (
         <aside className={`fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-200 z-50 transition-transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:static print:hidden`}>
           <div className="flex flex-col h-full p-6">
@@ -200,34 +205,33 @@ const App: React.FC = () => {
       <main className={`flex-1 overflow-y-auto print:p-0 ${isPublicMode ? 'w-full' : ''}`}>
         <header className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 py-4 flex items-center justify-between z-30 print:hidden">
           <div className="flex items-center gap-4">
+            {/* Tombol menu hanya tampil untuk Admin */}
             {!isPublicMode && (
               <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
               </button>
             )}
+            
+            {/* Branding Header Mode Publik */}
             {isPublicMode && (
               <div className="flex items-center gap-3">
                  <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black text-sm">S</div>
-                 <h1 className="text-sm font-black text-slate-800 uppercase tracking-tight">Portal Layanan Kesbangpol NTB</h1>
+                 <div className="flex flex-col">
+                   <h1 className="text-xs font-black text-slate-800 uppercase tracking-tight leading-none">Portal Layanan Perizinan</h1>
+                   <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5">Kesbangpol NTB</span>
+                 </div>
               </div>
             )}
-            <h2 className={`text-xl font-black text-slate-800 uppercase tracking-tighter ${isPublicMode ? 'hidden sm:block' : ''}`}>
+
+            <h2 className={`text-xl font-black text-slate-800 uppercase tracking-tighter ${isPublicMode ? 'hidden sm:block ml-4 border-l border-slate-200 pl-4' : ''}`}>
               {activeTab === 'dashboard' ? 'Overview' : 
                activeTab === 'tracking' ? 'Lacak Izin' :
                activeTab === 'apply' ? 'Permohonan' : 
                activeTab === 'verification' ? 'Verifikasi' : 'Arsip Digital'}
             </h2>
           </div>
-          {isPublicMode && (
-            <button 
-              onClick={() => {
-                window.location.href = window.location.origin + window.location.pathname;
-              }}
-              className="text-[10px] font-black bg-slate-100 text-slate-600 px-4 py-2 rounded-xl hover:bg-slate-200 transition-all uppercase tracking-widest"
-            >
-              Kembali ke Beranda
-            </button>
-          )}
+          
+          {/* Tombol Kembali ke Beranda telah dihapus sesuai permintaan */}
         </header>
 
         <div className={`p-8 max-w-7xl mx-auto print:p-0 ${isPublicMode ? 'py-12' : ''}`}>
