@@ -28,22 +28,58 @@ const ApplicationForm: React.FC = () => {
     }
   };
 
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [regId, setRegId] = useState('');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    const newId = `REG-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
+    setRegId(newId);
+    
     setTimeout(() => {
       setSubmitted(false);
-      alert("Permohonan Berhasil! Dokumen Anda telah diterima oleh sistem SIPEKA. Admin akan memproses permohonan Anda dalam 1-3 hari kerja.");
+      setShowSuccess(true);
       setFormData({
         name: '', idNumber: '', email: '', phone: '', university: '', 
         title: '', location: NTB_REGENCIES[0], category: RESEARCH_CATEGORIES[0], duration: '3 Bulan'
       });
       setFiles({ ktp: null, proposal: null, suratPengantar: null });
-    }, 2000);
+    }, 1500);
   };
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-slide-up">
+      {showSuccess && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowSuccess(false)}></div>
+          <div className="relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-8 text-center space-y-6 animate-slide-up">
+            <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+              <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black text-slate-800">Permohonan Terkirim!</h3>
+              <p className="text-slate-500 text-sm">ID Registrasi Anda: <span className="font-black text-indigo-600">{regId}</span></p>
+              <p className="text-xs text-slate-400">Simpan ID ini untuk melacak status permohonan Anda.</p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={() => window.print()}
+                className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2H7a2 2 0 00-2 2v4"></path></svg>
+                Cetak Bukti Pengajuan
+              </button>
+              <button 
+                onClick={() => setShowSuccess(false)}
+                className="w-full py-4 bg-slate-100 text-slate-600 rounded-2xl font-black hover:bg-slate-200 transition-all"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-indigo-700 to-blue-600 rounded-3xl p-8 text-white shadow-xl">
         <div className="flex items-center gap-4 mb-4">

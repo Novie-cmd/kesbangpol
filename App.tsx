@@ -39,7 +39,9 @@ const App: React.FC = () => {
     setSelectedPermitForPrint(permit);
     setTimeout(() => {
       window.print();
-    }, 150);
+      // Reset after print dialog closes to restore normal view
+      setTimeout(() => setSelectedPermitForPrint(null), 500);
+    }, 200);
   };
 
   useEffect(() => {
@@ -80,7 +82,7 @@ const App: React.FC = () => {
     <div className="min-h-screen flex bg-slate-50 font-sans print:bg-white text-slate-900">
       {/* Formal Permit Template (Invisible in UI, Visible in Print) */}
       {selectedPermitForPrint && (
-        <div id="print-area" className="hidden print:block p-12 bg-white text-black font-serif leading-relaxed">
+        <div id="print-area" className="hidden print-only p-12 bg-white text-black font-serif leading-relaxed">
           <div className="flex items-center gap-6 border-b-[3px] border-black pb-4 mb-6">
             <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center border-2 border-black rounded-lg">
                <span className="text-[10px] font-bold text-center">LOGO PROVINSI NTB</span>
@@ -222,14 +224,16 @@ const App: React.FC = () => {
           </div>
           
           {isPublicMode ? (
-            <button 
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3 py-1.5 md:px-5 md:py-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg md:rounded-xl font-black text-[8px] md:text-[10px] uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all shadow-sm"
-            >
-              <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-              <span className="hidden xs:inline">Keluar Aplikasi</span>
-              <span className="xs:hidden">Keluar</span>
-            </button>
+            activeTab !== 'apply' && (
+              <button 
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 px-3 py-1.5 md:px-5 md:py-2.5 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg md:rounded-xl font-black text-[8px] md:text-[10px] uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all shadow-sm"
+              >
+                <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                <span className="hidden xs:inline">Keluar Aplikasi</span>
+                <span className="xs:hidden">Keluar</span>
+              </button>
+            )
           ) : (
             <div className="hidden md:block">
               <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1.5 rounded-full">Admin System</span>
@@ -237,7 +241,7 @@ const App: React.FC = () => {
           )}
         </header>
 
-        <div className={`p-4 md:p-8 max-w-7xl mx-auto print:p-0 ${isPublicMode ? 'py-6 md:py-12' : ''}`}>
+        <div className={`p-4 md:p-8 max-w-7xl mx-auto print:p-0 ${isPublicMode ? 'py-6 md:py-12' : ''} ${selectedPermitForPrint ? 'no-print' : ''}`}>
           {activeTab === 'dashboard' && <Dashboard permits={permits} onSetPublicMode={setIsPublicMode} onSetActiveTab={setActiveTab} />}
           {activeTab === 'apply' && <ApplicationForm />}
           {activeTab === 'verification' && <ApplicationList permits={permits} setPermits={setPermits} onPrint={handlePrint} />}
