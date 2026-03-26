@@ -115,6 +115,20 @@ const Dashboard: React.FC<DashboardProps> = ({ permits, onSetPublicMode, onSetAc
 
   return (
     <div className="space-y-8 animate-fade-in">
+      <div className="flex justify-between items-center no-print">
+        <div>
+          <h3 className="text-2xl font-black text-slate-800 tracking-tight">Dashboard Statistik</h3>
+          <p className="text-slate-500 text-sm">Ringkasan data perizinan penelitian 2023-2026</p>
+        </div>
+        <button 
+          onClick={() => window.print()}
+          className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-2xl font-black text-slate-700 shadow-sm hover:shadow-md transition-all active:scale-95"
+        >
+          <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2H7a2 2 0 00-2 2v4"></path></svg>
+          Cetak Laporan
+        </button>
+      </div>
+
       {/* Summary Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Total Permohonan" value={totals.total} color="bg-indigo-500" icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>} />

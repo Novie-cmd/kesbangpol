@@ -2,13 +2,26 @@
 import React, { useState } from 'react';
 import { PermitStatus, ResearchPermit } from '../types';
 
-const ApplicationList: React.FC<{ permits: ResearchPermit[], setPermits: React.Dispatch<React.SetStateAction<ResearchPermit[]>> }> = ({ permits, setPermits }) => {
+const ApplicationList: React.FC<{ 
+  permits: ResearchPermit[], 
+  setPermits: React.Dispatch<React.SetStateAction<ResearchPermit[]>>,
+  onPrint: (permit: ResearchPermit) => void 
+}> = ({ permits, setPermits, onPrint }) => {
   const [filter, setFilter] = useState('');
   const [detailPermit, setDetailPermit] = useState<ResearchPermit | null>(null);
 
   const handleStatusChange = (id: string, newStatus: PermitStatus) => {
     setPermits(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
-    setDetailPermit(null);
+    // If approved, we might want to keep it in detail to print, but the current logic closes it
+    // Let's modify to allow printing if it was just approved
+    if (newStatus === PermitStatus.APPROVED) {
+      const updated = permits.find(p => p.id === id);
+      if (updated) {
+        setDetailPermit({ ...updated, status: newStatus });
+      }
+    } else {
+      setDetailPermit(null);
+    }
   };
 
   const pendingPermits = permits.filter(p => 
@@ -139,15 +152,27 @@ const ApplicationList: React.FC<{ permits: ResearchPermit[], setPermits: React.D
             </div>
 
             <div className="p-8 bg-slate-50 border-t border-slate-100 flex gap-4">
-              <button 
-                onClick={() => handleStatusChange(detailPermit.id, PermitStatus.APPROVED)}
-                className="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-black shadow-lg shadow-emerald-100 hover:bg-emerald-600 transition-all flex items-center justify-center gap-2"
-              >
-                Setujui
-              </button>
-              <button onClick={() => handleStatusChange(detailPermit.id, PermitStatus.REJECTED)} className="px-8 py-4 bg-white text-rose-500 border border-rose-100 rounded-2xl font-black hover:bg-rose-50 transition-all">
-                Tolak
-              </button>
+              {detailPermit.status === PermitStatus.APPROVED ? (
+                <button 
+                  onClick={() => onPrint(detailPermit)}
+                  className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2H7a2 2 0 00-2 2v4"></path></svg>
+                  Cetak Izin
+                </button>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => handleStatusChange(detailPermit.id, PermitStatus.APPROVED)}
+                    className="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-black shadow-lg shadow-emerald-100 hover:bg-emerald-600 transition-all flex items-center justify-center gap-2"
+                  >
+                    Setujui
+                  </button>
+                  <button onClick={() => handleStatusChange(detailPermit.id, PermitStatus.REJECTED)} className="px-8 py-4 bg-white text-rose-500 border border-rose-100 rounded-2xl font-black hover:bg-rose-50 transition-all">
+                    Tolak
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

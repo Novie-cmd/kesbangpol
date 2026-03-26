@@ -42,6 +42,14 @@ const App: React.FC = () => {
     }, 150);
   };
 
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setSelectedPermitForPrint(null);
+    };
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => window.removeEventListener('afterprint', handleAfterPrint);
+  }, []);
+
   const handleLogout = () => {
     // Reset state secara internal (SPA Way)
     setIsPublicMode(false);
@@ -232,7 +240,7 @@ const App: React.FC = () => {
         <div className={`p-4 md:p-8 max-w-7xl mx-auto print:p-0 ${isPublicMode ? 'py-6 md:py-12' : ''}`}>
           {activeTab === 'dashboard' && <Dashboard permits={permits} onSetPublicMode={setIsPublicMode} onSetActiveTab={setActiveTab} />}
           {activeTab === 'apply' && <ApplicationForm />}
-          {activeTab === 'verification' && <ApplicationList permits={permits} setPermits={setPermits} />}
+          {activeTab === 'verification' && <ApplicationList permits={permits} setPermits={setPermits} onPrint={handlePrint} />}
           {activeTab === 'archive' && <PermitArchive permits={permits} setPermits={setPermits} onPrint={handlePrint} />}
           {activeTab === 'tracking' && <TrackingStatus permits={permits} onPrint={handlePrint} />}
         </div>
